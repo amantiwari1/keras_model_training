@@ -1,64 +1,59 @@
 
 from keras.layers import Dropout,Dense, Conv2D, MaxPooling2D, Flatten, BatchNormalization
 from keras.models import Model, Sequential
-from keras.preprocessing.image import ImageDataGenerator
 from keras.optimizers import RMSprop
-
-
-train_datagen = ImageDataGenerator(rescale = 1./255,
-                                   shear_range = 0.2,
-                                   zoom_range = 0.2,
-                                   horizontal_flip = True)
+import tensorflow as tf
+import tunings
 
 
 
+(x_train, y_train), (x_test, y_test) = tf.keras.datasets.fashion_mnist.load_data()
 
-training_set = train_datagen.flow_from_directory('images',
-                                                 target_size = (64, 64),
-                                                 batch_size = 32,
-                                                 class_mode = 'categorical')
+model = tf.keras.Sequential()
 
+model.add(tf.keras.layers.Conv2D(filters=tunings.filters, kernel_size=2, padding='same', activation='relu', input_shape=(28,28,1))) 
+model.add(tf.keras.layers.MaxPooling2D(pool_size=2))
+model.add(tf.keras.layers.Dropout(0.3))
 
-model = Sequential()
+model.add(tf.keras.layers.Conv2D(filters=tunings.filters//2, kernel_size=2, padding='same', activation='relu'))
+model.add(tf.keras.layers.MaxPooling2D(pool_size=2))
+model.add(tf.keras.layers.Dropout(0.3))
 
-
-model.add(Conv2D(filters=512,kernel_size=(3,3),activation='relu',input_shape=(64,64,3)))
-model.add(MaxPooling2D(pool_size=(2,2)))
-model.add(Dropout(0.2))
-model.add(BatchNormalization())
-
-
-model.add(Conv2D(filters=256,kernel_size=(3,3),activation='relu'))
-model.add(MaxPooling2D(pool_size=(4,4)))
-model.add(Dropout(0.2))
-model.add(BatchNormalization())
+model.add(tf.keras.layers.Flatten())
+model.add(tf.keras.layers.Dense(tunings.filters*8, activation='relu'))
+model.add(tf.keras.layers.Dropout(0.5))
+model.add(tf.keras.layers.Dense(10, activation='softmax'))
 
 
-model.add(Flatten())
-model.add(Dense(128,activation='relu'))
-model.add(Dropout(0.2))
+model.compile(loss='categorical_crossentropy',
+            optimizer='adam',
+            metrics=['accuracy'])
 
 
-model.add(BatchNormalization())
-model.add(Dense(64,activation='relu'))
-model.add(Dropout(0.2))
+from keras.callbacks import ModelCheckpoint
+
+checkpointer = ModelCheckpoint(filepath='model.weights.best.hdf5', verbose = 1, save_best_only=True)
+model.fit(x_train,
+         y_train,
+         batch_size=64,
+         epochs=tunings.epochs,
+         validation_data=(x_test, y_test),
+         callbacks=[checkpointer])
 
 
-model.add(BatchNormalization())
-model.add(Dense(8,activation='softmax'))
+# Evaluate the model on test set
+score = model.evaluate(x_test, y_test, verbose=0)
 
+acc = round(score[1] * 100, 3)
 
-model.compile(loss = 'categorical_crossentropy',
-              optimizer = RMSprop(lr = 0.001),
-              metrics = ['accuracy'])
+print(" Accuracy ", acc)
 
-print(model.summary())
+import os
 
-r = model.fit_generator(
-  training_set,
-  epochs=5,
-  steps_per_epoch=50
-)
+if acc >= 98:
+  os.system("echo 'true' > /accuracy.txt")
+else:
+  os.system("echo 'false' > /accuracy.txt")
 
 
 
