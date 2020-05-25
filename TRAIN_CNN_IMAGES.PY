@@ -1,7 +1,6 @@
 
-from keras.layers import Dropout,Dense, Conv2D, MaxPooling2D, Flatten, BatchNormalization
-from keras.models import Model, Sequential
-from keras.optimizers import RMSprop
+from keras.layers import Dropout,Dense, Conv2D, MaxPooling2D, Flatten
+from keras.models import Sequential
 import tensorflow as tf
 import tunings
 
