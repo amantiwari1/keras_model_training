@@ -6,6 +6,7 @@ import tunings
 import keras
 
 
+print(tunings.filters)
 
 (x_train, y_train), (x_test, y_test) = keras.datasets.fashion_mnist.load_data()
 
@@ -20,18 +21,20 @@ model.add(tf.keras.layers.MaxPooling2D(pool_size=2))
 model.add(tf.keras.layers.Dropout(0.3))
 
 model.add(tf.keras.layers.Flatten())
-model.add(tf.keras.layers.Dense(tunings.filters*8, activation='relu'))
+model.add(tf.keras.layers.Dense(tunings.filters*4, activation='relu'))
 model.add(tf.keras.layers.Dropout(0.5))
 model.add(tf.keras.layers.Dense(10, activation='softmax'))
 
 
-model.compile(loss='categorical_crossentropy',
+model.compile(loss='sparse_categorical_crossentropy',
             optimizer='adam',
             metrics=['accuracy'])
 
 
 
-model.fit(x_train,
+
+
+model.fit(x_train.reshape(60000, 28, 28, 1),
          y_train,
          batch_size=64,
          epochs=tunings.epochs)
