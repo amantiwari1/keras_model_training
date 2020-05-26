@@ -41,7 +41,7 @@ model.fit(x_train.reshape(60000, 28, 28, 1),
 
 
 # Evaluate the model on test set
-score = model.evaluate(x_test, y_test, verbose=0)
+score = model.evaluate(x_test.reshape(60000, 28, 28, 1), y_test, verbose=0)
 
 acc = round(score[1] * 100, 3)
 
