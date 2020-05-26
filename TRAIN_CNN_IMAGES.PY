@@ -3,10 +3,11 @@ from keras.layers import Dropout,Dense, Conv2D, MaxPooling2D, Flatten
 from keras.models import Sequential
 import tensorflow as tf
 import tunings
+import keras
 
 
 
-(x_train, y_train), (x_test, y_test) = tf.keras.datasets.fashion_mnist.load_data()
+(x_train, y_train), (x_test, y_test) = keras.datasets.fashion_mnist.load_data()
 
 model = tf.keras.Sequential()
 
