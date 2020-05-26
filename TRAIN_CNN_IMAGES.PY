@@ -50,9 +50,9 @@ print(" Accuracy ", acc)
 import os
 
 if acc >= 98:
-  os.system("echo 'true' > /accuracy.txt")
+  os.system("echo 'true' > accuracy.txt")
 else:
-  os.system("echo 'false' > /accuracy.txt")
+  os.system("echo 'false' > accuracy.txt")
 
 
 

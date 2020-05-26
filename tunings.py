@@ -1,2 +1,2 @@
-filters=32
+filters=2
 epochs=1
